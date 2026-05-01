@@ -23,12 +23,12 @@ const Episode = ({ movie }: {movie: Movie | null}) => {
             key={collection.id}
             className={"flex gap-3 max-w-lg bg-dark-100 p-5"}
           >
-            <img
+            <Image
               src={`https://image.tmdb.org/t/p/original/${collection?.still_path}`}
               alt={collection.name}
-              className="cursor-pointer"
-              // onClick={() => router.push(`/series/${collection.id}`)}
+              className="cursor-pointer object-cover"
               width={200}
+              height={112}
             />
             <div className={"flex flex-col gap-3"}>
               <div className={"flex gap-2 text-sm text-white"}>

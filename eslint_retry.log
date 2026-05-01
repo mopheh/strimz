@@ -1,0 +1,23 @@
+
+> strimz@0.1.0 lint
+> next lint
+
+
+./app/(root)/series/[id]/page.tsx
+115:20  Error: 'Image' is not defined.  react/jsx-no-undef
+182:24  Error: 'Image' is not defined.  react/jsx-no-undef
+
+./components/Now.tsx
+9:53  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./components/TheaterPlayer.tsx
+2:17  Error: 'useState' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./components/Upcoming.tsx
+11:53  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+28:47  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./components/ui/infinite-moving-cards.tsx
+48:6  Warning: React Hook useEffect has a missing dependency: 'addAnimation'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+
+info  - Need to disable some ESLint rules? Learn more here: https://nextjs.org/docs/app/api-reference/config/eslint#disabling-rules

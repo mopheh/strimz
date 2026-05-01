@@ -8,6 +8,8 @@ import Image from "next/image";
 import Head from "next/head";
 import Episode from "@/components/Episode";
 
+import type ReactPlayerType from "react-player";
+
 const ReactPlayer = dynamic(() => import("react-player/youtube"), {
   ssr: false,
 });
@@ -68,9 +70,9 @@ const Page = () => {
   const [isMuted, setIsMuted] = useState(true);
 
   const router = useRouter();
-  const playerRef = useRef<any>(null);
+  const playerRef = useRef<ReactPlayerType | null>(null);
 
-  const getMovieDetails = async () => {
+  const getMovieDetails = React.useCallback(async () => {
     try {
       const movieDetails = await fetch(`/api/tv/season?id=${movieId}&season=${season}`);
 
@@ -87,7 +89,7 @@ const Page = () => {
     } catch (error) {
       console.error(error);
     }
-  };
+  }, [movieId, season]);
 
   const fetchTrailer = async (movie: MovieData) => {
     const trailer = movie?.results?.find(
@@ -108,7 +110,7 @@ const Page = () => {
       setShowVideo(true);
     }, 5000);
     return () => clearTimeout(timer);
-  }, []);
+  }, [getMovieDetails]);
 
   useEffect(() => {
     document.title = `${movie?.title || movie?.name} || Strimz`;
@@ -153,12 +155,12 @@ const Page = () => {
               </div>
 
               {movie ? (
-                  <img
+                  <Image
                       src={`https://image.tmdb.org/t/p/original/${movie.poster_path}`}
                       alt="movie poster"
-                      className="cursor-pointer"
-                      width="100%"
-                      height="100%"
+                      className="cursor-pointer object-cover"
+                      width={500}
+                      height={750}
                   />
               ) : (
                   <div className="animate-pulse bg-gray-800 rounded-lg w-full h-full" />
@@ -177,7 +179,7 @@ const Page = () => {
                       />
                   ) : (
                       <ReactPlayer
-                          ref={(player: any) => (playerRef.current = player)}
+                          ref={(player: ReactPlayerType | null) => (playerRef.current = player)}
                           url={trailer}
                           playing
                           muted={isMuted}

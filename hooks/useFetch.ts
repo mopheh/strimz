@@ -3,36 +3,52 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 const UseFetch = (url: string) => {
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [results, setResults] = useState<MovieProps[]>([]);
   const [error, setError] = useState("");
   const [movieId, setMovieId] = useState("");
   const [mediaType, setMediaType] = useState("");
+
   useEffect(() => {
     const getMovies = async () => {
+      setIsLoading(true);
       try {
-        const movies = await fetch(url);
+        const response = await fetch(url);
 
-        // if (!res.ok) throw new Error(`HTTP error! Status: ${res.status}`);
-
-        const data = await movies.json();
-        const randNum = Math.floor(Math.random() * data.length);
-        setMovieId(data[randNum]?.id);
-        const detectedType = data[randNum]?.first_air_date
-          ? "tv"
-          : data[randNum]?.release_date
-            ? "movie"
-            : "tv";
-        setMediaType(detectedType);
-        if (!movies.ok) {
-          toast.error("An unexpected error occurred", {
-            description: `HTTP error! Status: ${movies.status}`,
-          });
+        if (!response.ok) {
+          const errorText = await response.text();
+          throw new Error(`HTTP error! Status: ${response.status} - ${errorText}`);
         }
-        setResults(data);
-      } catch (err) {
-        // @ts-ignore
-        setError(err?.message);
+
+        const text = await response.text();
+        if (!text) {
+          throw new Error("Empty response from server");
+        }
+
+        const data = JSON.parse(text);
+        
+        if (Array.isArray(data) && data.length > 0) {
+          const randNum = Math.floor(Math.random() * data.length);
+          const selected = data[randNum];
+          
+          setMovieId(selected?.id);
+          const detectedType = selected?.first_air_date
+            ? "tv"
+            : selected?.release_date
+              ? "movie"
+              : "tv";
+          setMediaType(detectedType);
+          setResults(data);
+        } else if (data.results) {
+           // Handle case where data is an object with a results array
+           setResults(data.results);
+        }
+      } catch (err: any) {
+        console.error("Fetch error:", err);
+        setError(err?.message || "An unexpected error occurred");
+        toast.error("Data fetch failed", {
+          description: err?.message || "Please check your connection.",
+        });
       } finally {
         setIsLoading(false);
       }
@@ -42,4 +58,6 @@ const UseFetch = (url: string) => {
 
   return { results, error, isLoading, movieId, mediaType };
 };
+
 export default UseFetch;
+

@@ -8,8 +8,8 @@ type UpcomingProps = {
 };
 
 const Upcoming = ({ setId, setShowTrailer }: UpcomingProps) => {
-  const [movie, setMovie] = useState<any[]>([]);
-  const getMovies = async () => {
+  const [movie, setMovie] = useState<Record<string, any /* eslint-disable-line @typescript-eslint/no-explicit-any */>[]>([]);
+  const getMovies = React.useCallback(async () => {
     try {
       const movies = await fetch("/api/movies/upcoming");
 
@@ -25,7 +25,7 @@ const Upcoming = ({ setId, setShowTrailer }: UpcomingProps) => {
       console.log(movieId);
       console.log(data.results);
       const movieFound = await Promise.all(
-        data.results.map(async (result: { id: any; }) => {
+        data.results.map(async (result: { id: any /* eslint-disable-line @typescript-eslint/no-explicit-any */ }) => {
           const movieDetails = await fetch(
             `/api/movies/details?id=${result.id}&type=movie`
           );
@@ -39,11 +39,11 @@ const Upcoming = ({ setId, setShowTrailer }: UpcomingProps) => {
     } catch (error) {
       console.error("Error fetching movies:", error);
     }
-  };
+  }, []);
 
   useEffect(() => {
     getMovies();
-  }, []);
+  }, [getMovies]);
 
   return (
     <div className={"px-7 xs:px-12 md:px-20 flex flex-col gap-3"}>
@@ -88,7 +88,7 @@ const Upcoming = ({ setId, setShowTrailer }: UpcomingProps) => {
                     <span className={"text-white"}> / 10</span>
                   </span>
                 </div>
-                <div>{item.genres.map((genre: { name: any; }) => `${genre.name}, `)}</div>
+                <div>{item.genres.map((genre: { name: string }) => `${genre.name}, `)}</div>
               </div>
               <div className={"flex gap-3"}>
                 <span>

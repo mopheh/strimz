@@ -6,9 +6,9 @@ type NowProps = {
   setShowTrailer: React.Dispatch<React.SetStateAction<boolean>>;
 };
 export function Now({ setId, setShowTrailer }: NowProps) {
-  const [movie, setMovie] = useState<any[]>([]);
+  const [movie, setMovie] = useState<Record<string, any /* eslint-disable-line @typescript-eslint/no-explicit-any */>[]>([]);
 
-  const getMovies = async () => {
+  const getMovies = React.useCallback(async () => {
     try {
       const movies = await fetch("/api/movies/showing");
 
@@ -24,7 +24,7 @@ export function Now({ setId, setShowTrailer }: NowProps) {
       console.log(movieId);
       console.log(data.results);
       const movieFound = await Promise.all(
-        data.results.map(async (result: { id: number; [key: string]: any }) => {
+        data.results.map(async (result: { id: number; [key: string]: any /* eslint-disable-line @typescript-eslint/no-explicit-any */ }) => {
           const movieDetails = await fetch(
             `/api/movies/details?id=${result.id}&type=movie`
           );
@@ -38,11 +38,11 @@ export function Now({ setId, setShowTrailer }: NowProps) {
     } catch (error) {
       console.error("Error fetching movies:", error);
     }
-  };
+  }, []);
 
   useEffect(() => {
     getMovies();
-  }, []);
+  }, [getMovies]);
 
   return (
     <>

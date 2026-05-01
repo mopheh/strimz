@@ -25,12 +25,12 @@ const Header = () => {
       <div className="flex items-center gap-4 sm:gap-6">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2 sm:gap-3">
-          <img
+          <Image
             src="/images/logo.png"
             alt="logo"
-            width={45}
-            height={45}
-            className="w-10 h-10 sm:w-[50px] sm:h-[50px]"
+            width={50}
+            height={50}
+            className="w-10 h-10 sm:w-[50px] sm:h-[50px] object-contain"
           />
           <h1 className="text-xl sm:text-2xl font-semibold text-white">
             Strimz

@@ -15,7 +15,7 @@ const Recommendation = ({ id, type }: { id:  string | string[] | undefined; type
   const [movies, setMovies] = useState<MovieProps[]>([]);
   const router = useRouter();
 
-  const getRecommendations = async () => {
+  const getRecommendations = React.useCallback(async () => {
     try {
       const recommendations = await fetch(
         `/api/movies/recommendations?id=${id}&type=${type}`
@@ -26,11 +26,11 @@ const Recommendation = ({ id, type }: { id:  string | string[] | undefined; type
     } catch (error) {
       console.error("Error fetching recommendations:", error);
     }
-  };
+  }, [id, type]);
 
   useEffect(() => {
     getRecommendations();
-  }, [id, type]);
+  }, [getRecommendations]);
 
   return (
     <section className="flex flex-col gap-4 mt-6">

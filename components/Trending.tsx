@@ -1,84 +1,104 @@
 "use client";
-import React, { RefObject, useRef } from "react";
+import React, { useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { LucideMoveLeft, LucideMoveRight } from "lucide-react";
-import Skeleton from "@/components/Skeleton";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import useFetch from "@/hooks/useFetch";
 import { MovieProps, TrendingProps } from "@/index";
+import { motion } from "framer-motion";
 
 const Trending = ({ type }: TrendingProps) => {
-  const { results: movies } = useFetch(`/api/movies/trending?type=${type}`);
-  console.log(movies);
+  const { results: movies, isLoading } = useFetch(`/api/movies/trending?type=${type}`);
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  const scroll = (offset: number) => {
+  const scroll = (direction: "left" | "right") => {
     if (scrollRef.current) {
-      scrollRef.current.scrollLeft += offset;
+      const { scrollLeft, clientWidth } = scrollRef.current;
+      const scrollTo = direction === "left" ? scrollLeft - clientWidth : scrollLeft + clientWidth;
+      scrollRef.current.scrollTo({ left: scrollTo, behavior: "smooth" });
     }
   };
+
+  if (isLoading) {
+    return (
+      <div className="flex gap-4 overflow-x-hidden px-6 md:px-12 lg:px-20 py-8">
+        {Array.from({ length: 5 }).map((_, i) => (
+          <div key={i} className="min-w-[280px] h-[350px] bg-white/5 animate-pulse rounded-2xl" />
+        ))}
+      </div>
+    );
+  }
+
   return (
-    <div className={"flex flex-col gap-3 my-6 relative"}>
-      <h1
-        className={
-          "font-poppins uppercase font-semibold text-white my-3 text-2xl px-7 xs:px-12 md:px-20"
-        }
-      >
-        Trending
-      </h1>
-      <button
-        onClick={() => scroll(-300)}
-        className="absolute left-0 top-1/2 z-20 -translate-y-1/2 h-[300px] bg-white bg-opacity-10 text-white p-2"
-      >
-        <LucideMoveLeft />
-      </button>
+    <section className="relative flex flex-col gap-6 py-12 overflow-hidden group/trending">
+      <div className="flex items-center justify-between px-6 md:px-12 lg:px-20">
+        <h2 className="font-bebas-neue text-4xl tracking-widest text-white uppercase">
+          Trending <span className="text-primary">Now</span>
+        </h2>
+        <div className="flex gap-2">
+          <button
+            onClick={() => scroll("left")}
+            className="w-10 h-10 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 flex items-center justify-center transition-colors group"
+          >
+            <ChevronLeft className="w-5 h-5 group-active:scale-90 transition-transform" />
+          </button>
+          <button
+            onClick={() => scroll("right")}
+            className="w-10 h-10 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 flex items-center justify-center transition-colors group"
+          >
+            <ChevronRight className="w-5 h-5 group-active:scale-90 transition-transform" />
+          </button>
+        </div>
+      </div>
+
       <div
         ref={scrollRef}
-        className={"flex overflow-x-auto scroll-smooth hide-scrollbar "}
+        className="flex gap-8 overflow-x-scroll scroll-smooth hide-scrollbar px-6 md:px-12 lg:px-20 pt-10 pb-6"
       >
-        {movies?.length
-          ? movies.slice(0, 10).map((movie: MovieProps, index) => (
-              <div
-                key={movie.id}
-                className={
-                  "flex overflow-y-hidden items-end w-[300px] relative min-w-[300px]"
-                }
+        {movies?.slice(0, 10).map((movie: MovieProps, index) => (
+          <motion.div
+            key={movie.id}
+            initial={{ opacity: 0, x: 50 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.6, delay: index * 0.1 }}
+            className="relative flex items-end min-w-[240px] md:min-w-[320px] h-[300px] md:h-[400px] group/item"
+          >
+            {/* Index Number (Netflix Style) */}
+            <div className="absolute -left-10 -bottom-4 z-0 select-none pointer-events-none overflow-hidden">
+              <span 
+                className="text-[180px] md:text-[260px] font-anton leading-none text-black/90 tracking-tighter"
+                style={{ 
+                  WebkitTextStroke: '4px rgba(255, 255, 255, 0.4)',
+                  paintOrder: 'stroke fill'
+                }}
               >
-                <div
-                  className={
-                    "text-[200px] leading-[0] h-[220px] w-1/2 -right-2 flex justify-end  tracking-tighter items-center text-right  font-anton relative count"
-                  }
-                >
-                  {index + 1}
-                </div>
-                <Link href={`/${movie.media_type}/${movie.id}`}>
-                  <Image
-                    src={
-                      movie.poster_path
-                        ? `https://image.tmdb.org/t/p/original/${movie.poster_path}`
-                        : `data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8z8AHAAMBAQAYj0lcAAAAAElFTkSuQmCC`
-                    }
-                    alt={"movie"}
-                    className={"cursor-pointer relative "}
-                    width={150}
-                    height={226}
-                    placeholder="blur"
-                    blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8z8AHAAMBAQAYj0lcAAAAAElFTkSuQmCC"
-                  />
-                </Link>
+                {index + 1}
+              </span>
+            </div>
+
+
+            {/* Poster Card */}
+            <Link 
+              href={`/${movie.media_type}/${movie.id}`}
+              className="relative z-10 w-full ml-12 md:ml-16 h-[85%] rounded-2xl overflow-hidden border border-white/10 shadow-2xl transition-all duration-500 group-hover/item:-translate-y-4 group-hover/item:border-primary/50 group-hover/item:shadow-primary/20"
+            >
+              <Image
+                src={`https://image.tmdb.org/t/p/w500/${movie.poster_path}`}
+                alt={movie.title || movie.name}
+                fill
+                className="object-cover"
+                sizes="(max-width: 768px) 180px, 240px"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover/item:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4">
+                 <p className="text-white text-xs font-bold truncate">{movie.title || movie.name}</p>
               </div>
-            ))
-          : Array.from({ length: 8 }).map((_, index) => (
-              <Skeleton key={index} />
-            ))}
+            </Link>
+          </motion.div>
+        ))}
       </div>
-      <button
-        onClick={() => scroll(300)}
-        className="absolute right-0 top-1/2 -translate-y-1/2 h-[300px] bg-white bg-opacity-10 text-white p-2"
-      >
-        <LucideMoveRight />
-      </button>
-    </div>
+    </section>
   );
 };
+
 export default Trending;
+

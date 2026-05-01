@@ -7,6 +7,7 @@ import Info from "@/components/Info";
 import Head from "next/head";
 import Recommendation from "@/components/Recommendation";
 import { MovieProps } from "@/index";
+import Image from "next/image";
 import dynamic from "next/dynamic";
 
 // ✅ Import type only (doesn't affect bundle)
@@ -38,7 +39,7 @@ const Page = () => {
   // ✅ Properly typed ref
   const playerRef = useRef<ReactPlayer | null>(null);
 
-  const getMovieDetails = async () => {
+  const getMovieDetails = React.useCallback(async () => {
     try {
       const movieDetails = await fetch(`/api/movies/details?id=${movieId}&type=tv`);
       if (!movieDetails.ok) throw new Error(`HTTP error! Status: ${movieDetails.status}`);
@@ -50,7 +51,7 @@ const Page = () => {
     } catch (error) {
       console.error(error);
     }
-  };
+  }, [movieId]);
 
   const fetchTrailer = async (movie: MovieData) => {
     const trailer = movie.results.find(
@@ -69,7 +70,7 @@ const Page = () => {
     getMovieDetails();
     const timer = setTimeout(() => setShowVideo(true), 5000);
     return () => clearTimeout(timer);
-  }, []);
+  }, [getMovieDetails]);
 
   useEffect(() => {
     document.title = `${movie?.title || movie?.name} || Strimz`;
@@ -112,12 +113,12 @@ const Page = () => {
               </div>
 
               {movie ? (
-                  <img
+                  <Image
                       src={`https://image.tmdb.org/t/p/original/${movie?.poster_path}`}
                       alt="movie"
-                      className="cursor-pointer"
-                      width="100%"
-                      height="100%"
+                      className="cursor-pointer object-cover"
+                      width={500}
+                      height={750}
                   />
               ) : (
                   <div className="animate-pulse bg-gray-800 rounded-lg w-full h-full" />
@@ -178,12 +179,12 @@ const Page = () => {
                   Seasons ({movie?.seasons.length || 0})
                 </h2>
                 <div className="flex flex-wrap gap-2">
-                  {movie?.seasons.map((collection: any) => (
-                      <img
+                  {movie?.seasons.map((collection: { id: number; poster_path: string; name?: string; title?: string; season_number: number }) => (
+                      <Image
                           key={collection.id}
                           src={`https://image.tmdb.org/t/p/original/${collection?.poster_path}`}
-                          alt={collection.name || collection.title}
-                          className="cursor-pointer"
+                          alt={collection.name || collection.title || "Season"}
+                          className="cursor-pointer object-cover"
                           onClick={() =>
                               router.push(`/series/${movieId}/season/${collection.season_number}`)
                           }

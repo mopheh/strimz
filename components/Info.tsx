@@ -1,7 +1,5 @@
-"use client";
 import React from "react";
-import Image from "next/image";
-import {casts, collection, movieVideo} from "..";
+import { casts, collection, movieVideo } from "..";
 
 type Genre = {
   id: number;
@@ -16,12 +14,12 @@ interface Movie {
     title: string;
     name: string;
     poster_path: string;
-    genres: [Genre];
+    genres: Genre[];
     first_air_date: string;
     belongs_to_collection: collection;
     last_episode_to_air: { runtime: number };
     next_episode_to_air: { runtime: number };
-    spoken_languages: [SpokenLanguage];
+    spoken_languages: SpokenLanguage[];
     backdrop_path: string;
     media_type: string;
     runtime: number;
@@ -56,60 +54,70 @@ const Info = ({ movie }: Movie) => {
   };
 
   return (
-    <div className="flex flex-col md:flex-row mt-3 font-poppins gap-6 text-white relative">
-      {/* Left section (Overview + Info) */}
-      <div className="flex flex-col flex-auto md:w-2/3 gap-4">
-        {/* Top Row (Type, Date, Runtime, Rating) */}
-        <div className="flex flex-wrap gap-3 text-xs items-center text-gray-200">
-          <span>{movie.first_air_date ? "Series" : "Movie"}</span>
-          <span>{movie.release_date ?? movie.first_air_date}</span>
-          <span>{getRuntime()}</span>
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-12 font-poppins text-white">
+      {/* Left section (Overview + Status) */}
+      <div className="md:col-span-2 space-y-8">
+        <div className="space-y-4">
+          <h3 className="text-xl font-bebas-neue tracking-widest text-primary/80 uppercase">The Story</h3>
+          <p className="text-base md:text-lg text-gray-300 leading-relaxed font-light">
+            {movie.overview || "No description available for this production."}
+          </p>
+        </div>
 
-          <div className="flex gap-1 items-center">
-            <Image
-              src="/icons/star.svg"
-              alt="rating star"
-              width={18}
-              height={18}
-              className="inline-block"
-            />
-            <span className="text-emerald-400">
-              {movie.vote_average.toFixed(1)}
-              <span className="text-gray-300"> / 10</span>
-            </span>
+        <div className="flex flex-wrap gap-8 pt-4 border-t border-white/10">
+          <div className="space-y-1">
+            <p className="text-[10px] uppercase tracking-widest text-gray-500 font-medium">Status</p>
+            <p className="text-sm font-semibold text-primary">{movie.status || "Unknown"}</p>
+          </div>
+          <div className="space-y-1">
+            <p className="text-[10px] uppercase tracking-widest text-gray-500 font-medium">Original Release</p>
+            <p className="text-sm font-semibold">{movie.release_date ?? movie.first_air_date ?? "N/A"}</p>
+          </div>
+          <div className="space-y-1">
+            <p className="text-[10px] uppercase tracking-widest text-gray-500 font-medium">Runtime</p>
+            <p className="text-sm font-semibold">{getRuntime()}</p>
+          </div>
+          <div className="space-y-1">
+            <p className="text-[10px] uppercase tracking-widest text-gray-500 font-medium">Global Rating</p>
+            <div className="flex items-center gap-2">
+               <span className="text-sm font-bold text-white bg-green-800/30 px-2 py-0.5 rounded border border-green-500/20">
+                {movie.vote_average.toFixed(1)}
+              </span>
+              <span className="text-[10px] text-gray-400">/ 10</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Right section (Technical Details) */}
+      <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-8 space-y-8">
+        <div className="space-y-2">
+          <p className="text-[10px] uppercase tracking-widest text-primary font-bold">Genres</p>
+          <div className="flex flex-wrap gap-2">
+            {movie.genres?.length > 0 ? movie.genres.map((g) => (
+              <span key={g.id} className="text-xs bg-white/10 px-2 py-1 rounded hover:bg-white/20 transition-colors cursor-default">
+                {g.name}
+              </span>
+            )) : <span className="text-xs text-gray-500">N/A</span>}
           </div>
         </div>
 
-        {/* Overview */}
-        <p className="text-xs sm:text-sm text-gray-300 leading-relaxed">
-          {movie.overview || "No description available."}
-        </p>
-      </div>
-
-      {/* Right section (Details) */}
-      <div className="flex flex-col gap-3 text-xs md:w-1/3">
-        <div className="flex flex-wrap gap-2">
-          <span className="text-gray-400 min-w-[100px]">Genre:</span>
-          <span className="capitalize text-gray-100 break-words">
-            {movie.genres.map((g) => g.name).join(", ") || "N/A"}
-          </span>
+        <div className="space-y-2">
+          <p className="text-[10px] uppercase tracking-widest text-primary font-bold">Languages</p>
+          <p className="text-sm text-gray-300 leading-snug">
+            {movie.spoken_languages?.map((l) => l.english_name).join(", ") || "N/A"}
+          </p>
         </div>
 
-        <div className="flex flex-wrap gap-2">
-          <span className="text-gray-400 min-w-[100px]">Languages:</span>
-          <span className="capitalize text-gray-100 break-words">
-            {movie.spoken_languages.map((l) => l.english_name).join(", ") ||
-              "N/A"}
-          </span>
-        </div>
-
-        <div className="flex flex-wrap gap-2">
-          <span className="text-gray-400 min-w-[100px]">
-            Production Companies:
-          </span>
-          <span className="capitalize text-gray-100 break-words">
-            {movie.production_companies.map((c) => c.name).join(", ") || "N/A"}
-          </span>
+        <div className="space-y-2">
+          <p className="text-[10px] uppercase tracking-widest text-primary font-bold">Production</p>
+          <div className="space-y-1">
+            {movie.production_companies?.length > 0 ? movie.production_companies.slice(0, 3).map((c) => (
+              <p key={c.id} className="text-xs text-gray-400 border-l-2 border-primary/30 pl-2">
+                {c.name}
+              </p>
+            )) : <p className="text-xs text-gray-500">N/A</p>}
+          </div>
         </div>
       </div>
     </div>
@@ -117,3 +125,4 @@ const Info = ({ movie }: Movie) => {
 };
 
 export default Info;
+

@@ -65,7 +65,7 @@ const Page = () => {
 
   const playerRef = useRef<InstanceType<typeof ReactPlayer> | null>(null);
 
-  const getMovieDetails = async () => {
+  const getMovieDetails = React.useCallback(async () => {
     try {
       const movieDetails = await fetch(
         `/api/tv/season?id=${movieId}&season=${season}`,
@@ -83,7 +83,7 @@ const Page = () => {
     } catch (error) {
       console.error(error);
     }
-  };
+  }, [movieId, season]);
   const fetchTrailer = async (movie: MovieData) => {
     const trailer = movie.results.find(
       (video) => video.type === "Trailer" && video.site === "YouTube",
@@ -103,7 +103,7 @@ const Page = () => {
     }, 5000);
 
     return () => clearTimeout(timer);
-  }, []);
+  }, [getMovieDetails]);
   useEffect(() => {
     document.title = `${movie?.title || movie?.name} || Strimz`;
   }, [movie]);
@@ -149,12 +149,12 @@ const Page = () => {
               </Button>
             </div>
             {movie ? (
-              <img
+              <Image
                 src={`https://image.tmdb.org/t/p/original/${movie?.poster_path}`}
                 alt={"movie"}
-                className={"cursor-pointer"}
-                width="100%"
-                height="100%"
+                className={"cursor-pointer object-cover"}
+                width={500}
+                height={750}
               />
             ) : (
               <div className="animate-pulse bg-gray-800 rounded-lg w-full h-full" />
@@ -173,7 +173,7 @@ const Page = () => {
                 ) : (
                   trailer && (
                     <ReactPlayer
-                      ref={(player: any) => (playerRef.current = player)}
+                      ref={(player: ReactPlayer | null) => (playerRef.current = player)}
                       url={trailer}
                       playing={true} // ✅ Auto Play
                       muted={isMuted} // ✅ Start Muted

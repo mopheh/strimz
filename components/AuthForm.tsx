@@ -41,7 +41,7 @@ const AuthForm = <T extends FieldValues>({
     defaultValues: defaultValues as DefaultValues<T>,
   });
 
-  const handleSubmit: SubmitHandler<T> = (data: any) => {
+  const handleSubmit: SubmitHandler<T> = (data: T) => {
     console.log(data);
   };
 
@@ -65,7 +65,7 @@ const AuthForm = <T extends FieldValues>({
               key={field}
               control={form.control}
               name={field as Path<T>}
-              render={({ field }:any) => (
+              render={({ field }: { field: any /* eslint-disable-line @typescript-eslint/no-explicit-any */ }) => (
                 <FormItem>
                   <FormLabel className={"capitalize font-sm font-poppins"}>
                     {FIELD_NAMES[field.name as keyof typeof FIELD_NAMES]}
