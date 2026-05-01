@@ -40,6 +40,7 @@ interface MovieProps {
   };
   seasons: any[];
   tagline?: string;
+  number_of_seasons?: number;
 }
 type logo = {
   file_path: string;

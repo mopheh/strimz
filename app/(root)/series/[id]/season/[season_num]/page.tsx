@@ -179,7 +179,7 @@ const Page = () => {
                       />
                   ) : (
                       <ReactPlayer
-                          ref={(player: ReactPlayerType | null) => (playerRef.current = player)}
+                          ref={(player: ReactPlayerType | null) => { playerRef.current = player; }}
                           url={trailer}
                           playing
                           muted={isMuted}

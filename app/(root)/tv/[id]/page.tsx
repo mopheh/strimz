@@ -77,7 +77,7 @@ const Page = () => {
                 className="h-full w-full relative"
               >
                 <ReactPlayer
-                  ref={(player: any /* eslint-disable-line @typescript-eslint/no-explicit-any */) => (playerRef.current = player)}
+                  ref={(player: any /* eslint-disable-line @typescript-eslint/no-explicit-any */) => { playerRef.current = player; }}
                   url={trailer}
                   playing
                   muted={isMuted}

@@ -66,7 +66,7 @@ const Overview = ({ type }: OverviewProps) => {
               className="absolute inset-0 w-full h-full"
             >
               <ReactPlayer
-                ref={(player: any /* eslint-disable-line @typescript-eslint/no-explicit-any */) => (playerRef.current = player)}
+                ref={(player: any /* eslint-disable-line @typescript-eslint/no-explicit-any */) => { playerRef.current = player; }}
                 url={trailer}
                 playing={true}
                 muted={isMuted}

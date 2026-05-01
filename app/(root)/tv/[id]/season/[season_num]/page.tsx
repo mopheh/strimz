@@ -173,7 +173,7 @@ const Page = () => {
                 ) : (
                   trailer && (
                     <ReactPlayer
-                      ref={(player: ReactPlayer | null) => (playerRef.current = player)}
+                      ref={(player) => { playerRef.current = player; }}
                       url={trailer}
                       playing={true} // ✅ Auto Play
                       muted={isMuted} // ✅ Start Muted

@@ -52,7 +52,7 @@ const TheaterPlayer = ({ movieId, mediaType }: TheaterPlayerProps) => {
     <div className="relative w-full aspect-video group shadow-[0_0_100px_rgba(0,0,0,1)] rounded-2xl overflow-hidden border border-white/10 bg-black">
       {trailer && (
         <ReactPlayer
-          ref={(player: any /* eslint-disable-line @typescript-eslint/no-explicit-any */) => (playerRef.current = player)}
+          ref={(player: any /* eslint-disable-line @typescript-eslint/no-explicit-any */) => { playerRef.current = player; }}
           url={trailer}
           playing={true}
           muted={isMuted}

@@ -5,11 +5,10 @@ import { eq, and } from "drizzle-orm";
 import { redirect } from "next/navigation";
 import TheaterPlayer from "@/components/TheaterPlayer";
 
-export default async function TheaterPage({ params }: { params: { id: string } }) {
+export default async function TheaterPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id: screeningId } = await params;
   const { userId } = await auth();
   if (!userId) redirect("/sign-in");
-
-  const screeningId = params.id;
 
   // 1. Verify Screening and Ticket
   const screening = await db.query.screenings.findFirst({
