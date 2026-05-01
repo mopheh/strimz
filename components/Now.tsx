@@ -1,12 +1,14 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { InfiniteMovingCards } from "@/components/ui/infinite-moving-cards";
+import { InfiniteMovingCardItem } from "@/index";
+
 type NowProps = {
   setId: React.Dispatch<React.SetStateAction<number | null>>;
   setShowTrailer: React.Dispatch<React.SetStateAction<boolean>>;
 };
 export function Now({ setId, setShowTrailer }: NowProps) {
-  const [movie, setMovie] = useState<Record<string, any /* eslint-disable-line @typescript-eslint/no-explicit-any */>[]>([]);
+  const [movie, setMovie] = useState<InfiniteMovingCardItem[]>([]);
 
   const getMovies = React.useCallback(async () => {
     try {

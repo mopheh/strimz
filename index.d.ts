@@ -68,3 +68,22 @@ interface TrendingProps {
 interface OverviewProps {
   type?: string;
 }
+
+export interface InfiniteMovingCardItem {
+  overview: string;
+  name: string;
+  title: string;
+  id: number;
+  backdrop_path: string;
+  media_type: string;
+  runtime: number;
+  images?: {
+    logos?: {
+      file_path: string;
+      iso_639_1: string;
+    }[];
+  };
+  genres: {
+    name: string;
+  }[];
+}
